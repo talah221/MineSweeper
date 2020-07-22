@@ -1,0 +1,25 @@
+body {
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+table{
+    background-color: white;
+    margin: auto;
+    padding: 1px;
+    border: 2px solid greenyellow;
+}
+.cell {
+    border: 2px solid black;
+    background-color: burlywood;
+    height: 75px;
+    width: 75px;
+    padding: 1px;
+    cursor: pointer;
+    
+}
+.emoji{
+    background-color: burlywood;
+    cursor: pointer;
+}
