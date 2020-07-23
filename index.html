@@ -1,17 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MineSweeper - Tal Lahyani</title>
 </head>
-<body onload=init()>
-<link rel="stylesheet" href="css/main.css">
 
-<h1 class="title">MineSweeper |<span class="emoji" onclick=init()>&#9786;</span></h1>
-<h3 class="score">Score: <span>0</span></h3>
-<div class="board"></div>
-<script src="js/main.js"></script>
-<script src="js/utils.js"></script>
+<body onload=init() oncontextmenu="return false;">
+    <link rel="stylesheet" href="css/main.css">
+
+    <h1 class="title">MineSweeper || Tal Lahyani |<div class="emoji" onclick=init()>😀</div>
+    </h1>
+    <div>Hints:</div>
+    <div  class="hints">
+        <span onclick="getHint(this)" class="hint-1">&#128161 </span>
+        <span onclick="getHint(this)" class="hint-2">&#128161 </span>
+        <span onclick="getHint(this)" class="hint-3">&#128161 </span></div>
+    <h3 class="timer">⏰ Timer: ⏰<span>0</span></h2>
+
+        <button onclick="easyLvl()" class="bgnbtn">Beginner Level 4X4</button>
+        <button onclick="mediumLvl()" class="mediumbtn">Medium Level 8X8</button>
+        <button onclick="expertLvl()" class="expertbtn">Expert Level 12X12</button>
+
+        <div class="board"></div>
+        <script src="js/main.js"></script>
+        <script src="js/utils.js"></script>
 </body>
+
 </html>

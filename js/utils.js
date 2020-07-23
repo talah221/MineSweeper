@@ -14,9 +14,9 @@ function printMat(mat, selector) {
   elContainer.innerHTML = strHTML;
 }
 
-function renderCell(location, value) {
+function renderCell(i,j, value) {
   // Select the elCell and set the value
-  var elCell = document.querySelector(`.cell${location.i}-${location.j}`);
+  var elCell = document.querySelector(`.cell${i}-${j}`);
   elCell.innerHTML = value;
 }
 
