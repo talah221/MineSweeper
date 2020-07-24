@@ -45,6 +45,9 @@ function init() {
 
     document.querySelector('.emoji').innerText = normalEMOJI
     document.querySelector('.hintscount').innerText=gHintCounter
+    document.querySelector('.timer span').innerText=gSeconds
+
+    
 
     cleanHintsBgc()
     renderLives()
@@ -263,8 +266,7 @@ function getHint(elHint) {
 
 
 function gameTimer() {
-    var elTimer = document.querySelector('.timer span')
-    elTimer.innerText = gSeconds;
+    document.querySelector('.timer span').innerText=gSeconds
     gSeconds++;
 
 }
