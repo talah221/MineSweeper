@@ -1,20 +1,22 @@
 'use strict'
-const EMPTY = ''
+const EMPTY = '?'
 const FLAG = '🚩'
 const MINE = '&#128163'
 const normalEMOJI = '😀'
 const loseEMOJI = '😭'
-const winEMOJI='😎'
+const winEMOJI = '😎'
 
-var gTimerInterval;
+var gBoard;
+var gValue;
 var gIsWin;
-var gSeconds;
 var gClickCounter;
 var gRightClickCounter;
-var gValue;
-var gBoard;
-var gHintCounter;
 var isHint;
+var gHintCounter;
+var gIsSafeClick;
+var gSafeClickCounter;
+var gTimerInterval;
+var gSeconds;
 
 var gLevel = {
     SIZE: 4,
@@ -23,23 +25,30 @@ var gLevel = {
 var gGame = {
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0 // should be an interval
+    gameLives: 3,
 }
 
 function init() {
-    gBoard = buildBoard(gLevel.SIZE, gLevel.SIZE);
-    gIsWin=false;
-    isHint = false;
     clearInterval(gTimerInterval);
-    setMinesNegsCount(gBoard)
+    gBoard = buildBoard(gLevel.SIZE, gLevel.SIZE);
     renderBoard(gBoard);
+    gIsWin = false;
+    isHint = false;
+    setMinesNegsCount(gBoard)
     gClickCounter = 0;
     gRightClickCounter = 0;
     gSeconds = 0;
-    cleanHintsBgc()
     gHintCounter = 0;
-    var elEmoji=document.querySelector('.emoji')
-    elEmoji.innerText=normalEMOJI
+    gSafeClickCounter = 3;
+    gIsSafeClick = false;
+    gGame.gameLives = 3;
+
+    document.querySelector('.emoji').innerText = normalEMOJI
+    document.querySelector('.hintscount').innerText=gHintCounter
+
+    cleanHintsBgc()
+    renderLives()
+    renderMines()
 
 
 
@@ -112,18 +121,32 @@ function renderBoard(board) {
 
 function cellClicked(i, j) {
     var currCell = gBoard[i][j]
+    if (currCell.isShown) return;
     if (isHint) {
         currCell.isShown = true;
         setTimeout(function () {
             currCell.isShown = false
+            currCell.isMarked = false;
             renderBoard(gBoard)
         }, 1000)
         renderBoard(gBoard)
-        isHint=false;
+        isHint = false;
         return;
     }
+    // if (gIsSafeClick) {
+    //     var safeCell = getRandomSafeCell()
+    //     gSafeClickCounter++
+    //     safeCell.isShown = true
+    //     setTimeout(function () {
+    //         safeCell.isShown = false
+    //     }, 2500)
+    //     renderBoard(gBoard)
+    //     gIsSafeClick = false;
+    // }
 
-    if (currCell.isShown) return;
+
+
+
     if (gClickCounter === 0 && gRightClickCounter === 0) gTimerInterval = setInterval(gameTimer, 1000);
     if (gClickCounter === 0 && currCell.isMine) {
         currCell.isMine = false;
@@ -138,7 +161,7 @@ function cellClicked(i, j) {
     checkVictory();
     renderBoard(gBoard);
 
-    if (gBoard[i][j].minesAroundCount === 0) expandShown(gBoard, currCell, i, j);
+    if (currCell.minesAroundCount === 0) expandShown(gBoard, currCell, i, j);
 
 
 }
@@ -149,38 +172,48 @@ function cellMarked(i, j) {
     gRightClickCounter++
     var elCell = document.querySelector(`.cell${i}-${j}`)
     if (!gBoard[i][j].isMarked) {
-        gBoard[i][j]
         gBoard[i][j].isMarked = true;
         elCell.innerText = FLAG
+        gLevel.MINES--
     }
     else {
         gBoard[i][j].isMarked = false;
         elCell.innerText = EMPTY
+        gLevel.MINES++
     }
+    renderMines()
     checkVictory()
 }
 
 function checkGameOver(i, j) {
+    var currCell = gBoard[i][j]
+    if (gBoard[i][j].isMine && gGame.gameLives > 0) {
+        setTimeout(function () { currCell.isShown = false; renderBoard(gBoard) }, 3000)
+        gGame.gameLives--
+        alert('You Have: ' + gGame.gameLives + ' lives left')
+        renderLives()
+    }
 
-    if (gBoard[i][j].isMine) {
+    if (gBoard[i][j].isMine && gGame.gameLives === 0) {
+
         showAllBombs()
         clearInterval(gTimerInterval);
         gSeconds = 0;
         var elTimer = document.querySelector('.timer span')
         elTimer.innerText = gSeconds;
-        var elEmoji=document.querySelector('.emoji')
-        elEmoji.innerText=loseEMOJI
+        var elEmoji = document.querySelector('.emoji')
+        elEmoji.innerText = loseEMOJI
         alert('Game Over')
         setTimeout(init, 2500)
     }
 }
 
 function expandShown(board, elCell, cellI, cellJ) {
+    if (gBoard[cellI][cellJ].isMine) return;
     for (var i = cellI - 1; i <= cellI + 1; i++) {
         for (var j = cellJ - 1; j <= cellJ + 1; j++) {
             if (checkIfInBoard(gBoard, i, j) && !gBoard[i][j].isMine) gBoard[i][j].isShown = true;
             renderBoard(gBoard);
-
         }
     }
 }
@@ -188,11 +221,7 @@ function expandShown(board, elCell, cellI, cellJ) {
 function showAllBombs() {
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[0].length; j++) {
-            if (gBoard[i][j].isMine) {
-                gBoard[i][j].isShown = true;
-            }
-
-
+            if (gBoard[i][j].isMine) gBoard[i][j].isShown = true;
         }
     }
 }
@@ -211,9 +240,9 @@ function checkVictory() {
     }
 
     if (totalCells === minesMarked + cellsShown) {
-        gIsWin=true;
-        var elEmoji=document.querySelector('.emoji')
-        elEmoji.innerText=winEMOJI;
+        gIsWin = true;
+        var elEmoji = document.querySelector('.emoji')
+        elEmoji.innerText = winEMOJI;
         alert('You Win')
         setTimeout(init, 2000)
     }
@@ -229,6 +258,7 @@ function getHint(elHint) {
     elHint.style.backgroundColor = 'wheat'
     isHint = true;
     gHintCounter++
+    document.querySelector('.hintscount').innerText=gHintCounter
 }
 
 
@@ -271,14 +301,35 @@ function cleanHintsBgc() {
 
 }
 
-// function emojiStatus(){
-//    var elEmoji=document.querySelector('.emoji')
 
-//    if (gIsWin){
-//     elEmoji.innerText=winEMOJI;
-//    }
-//    if(gIsWin){
+function renderLives() {
+    var elLives = document.querySelector('.lives')
+    var str = ''
+    for (var i = 0; i < gGame.gameLives; i++) {
+        str += '💖';
+    }
+    elLives.innerText = str;
+document.querySelector('.livescount').innerText=gGame.gameLives
+}
 
-//        elEmoji.innerText=loseEMOJI;
-//    }
+
+// function safeClick(){
+//     gIsSafeClick=true;
+// } 
+// function getRandomSafeCell() {
+//     var isSafeCell = gBoard[getRandomInt(0, gBoard.length)][getRandomInt(0, gBoard[0].length)].isMine
+//     if (!isSafeCell) {
+//         return isSafeCell;
+//     }
+//     else getRandomSafeCell()
 // }
+
+function renderMines() {
+    var elMines = document.querySelector('.mines')
+    var str = ''
+    for (var i = 0; i < gLevel.MINES; i++) {
+        str += '💣'
+    }
+    elMines.innerText = str;
+    document.querySelector('.minescount').innerText=gLevel.MINES;
+}

@@ -10,18 +10,27 @@
 <body onload=init() oncontextmenu="return false;">
     <link rel="stylesheet" href="css/main.css">
 
-    <h1 class="title">MineSweeper || Tal Lahyani |<div class="emoji" onclick=init()>😀</div>
+    <h1 class="title">MineSweeper || Tal Lahyani <div class="emoji" onclick=init()>😀</div>
     </h1>
-    <div>Hints:</div>
-    <div  class="hints">
+    <div>Hints: <span class="hintscount" >0</span><span>/3</span></div>
+    <div class="hints">
         <span onclick="getHint(this)" class="hint-1">&#128161 </span>
         <span onclick="getHint(this)" class="hint-2">&#128161 </span>
         <span onclick="getHint(this)" class="hint-3">&#128161 </span></div>
-    <h3 class="timer">⏰ Timer: ⏰<span>0</span></h2>
+    <div>Lives: <span class="livescount" ></span></div>
+    <div class="lives"></div>
+    <div>Mines: <span class="minescount"></span></div>
+    <div class="mines"></div>
+    <h3 class="timer">⏰ Timer: <span>0</span></h2>
 
         <button onclick="easyLvl()" class="bgnbtn">Beginner Level 4X4</button>
         <button onclick="mediumLvl()" class="mediumbtn">Medium Level 8X8</button>
         <button onclick="expertLvl()" class="expertbtn">Expert Level 12X12</button>
+        <div>
+
+            <button onclick="safeClick()" class="safe">Safe Clicks: <span class="safecount"></span>3</button>
+
+        </div>
 
         <div class="board"></div>
         <script src="js/main.js"></script>
