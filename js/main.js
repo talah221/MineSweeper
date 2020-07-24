@@ -174,12 +174,12 @@ function cellMarked(i, j) {
     if (!gBoard[i][j].isMarked) {
         gBoard[i][j].isMarked = true;
         elCell.innerText = FLAG
-        gLevel.MINES--
+        // gLevel.MINES--
     }
     else {
         gBoard[i][j].isMarked = false;
         elCell.innerText = EMPTY
-        gLevel.MINES++
+        // gLevel.MINES++
     }
     renderMines()
     checkVictory()
